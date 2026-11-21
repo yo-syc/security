@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NetGuard | Network Security Monitoring</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark">N</span><div><strong>NETGUARD</strong><small>NETWORK SECURITY MONITORING</small></div></div>
+    <nav class="nav">
+      <button class="nav-item active" data-view="dashboard"><span>◈</span>Dashboard</button>
+      <button class="nav-item" data-view="devices"><span>▣</span>Devices</button>
+      <button class="nav-item" data-view="alerts"><span>⚠</span>Security Alerts <b id="nav-alert-count">0</b></button>
+      <button class="nav-item" data-view="history"><span>↕</span>Device History</button>
+      <button class="nav-item" data-view="settings"><span>⚙</span>Settings</button>
+    </nav>
+    <div class="sidebar-footer"><div class="avatar">AU</div><div><strong>Admin User</strong><small>Administrator</small></div><span class="online-dot"></span></div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div class="mobile-title">NETGUARD</div>
+      <label class="search"><span>⌕</span><input id="global-search" type="search" placeholder="Search devices, alerts, IPs..."></label>
+      <div class="top-actions"><div class="network-pill"><span class="pulse"></span><span id="network-status">Local network active · Online</span></div><button class="icon-button" data-view="alerts" aria-label="View alerts">♢<b id="bell-count">0</b></button></div>
+    </header>
+    <div class="content">
+      <section id="view-dashboard" class="view active">
+        <div class="page-heading"><div><p class="eyebrow">OVERVIEW</p><h1>Dashboard overview</h1><p class="muted">Monitor your network activity and security posture.</p></div><span class="live-label"><i></i> LIVE MONITORING</span></div>
+        <div class="stats-grid">
+          <article class="stat-card"><span class="stat-icon blue">◉</span><span class="stat-label">TOTAL DEVICES</span><strong id="total-devices">0</strong><small>Discovered on network</small></article>
+          <article class="stat-card"><span class="stat-icon green">⌁</span><span class="stat-label">ONLINE DEVICES</span><strong id="online-devices">0</strong><small>Currently connected</small></article>
+          <article class="stat-card"><span class="stat-icon cyan">✓</span><span class="stat-label">TRUSTED DEVICES</span><strong id="trusted-devices">0</strong><small>Approved devices</small></article>
+          <article class="stat-card"><span class="stat-icon amber">⚠</span><span class="stat-label">UNKNOWN DEVICES</span><strong id="unknown-devices">0</strong><small>Require attention</small></article>
+        </div>
+        <div class="dashboard-grid"><article class="panel"><div class="panel-heading"><div><h2>Recent Security Alerts</h2><p class="muted">Latest network security events</p></div><button class="text-button" data-view="alerts">View all →</button></div><div id="recent-alerts" class="alert-list"></div></article>
+          <article class="panel network-card"><div class="panel-heading"><div><h2>Network Status</h2><p class="muted">Live scanner configuration</p></div><span class="status-badge online">ACTIVE</span></div><div class="network-visual"><div class="radar"><span></span></div><div><strong id="scanner-state">Scanner active</strong><p class="muted">Monitoring your local network</p></div></div><div class="network-details"><div><span>Target subnet</span><strong id="subnet-value">192.168.1.0/24</strong></div><div><span>Scan interval</span><strong><span id="interval-value">5</span> seconds</strong></div></div></article>
+        </div>
+      </section>
+      <section id="view-devices" class="view"><div class="page-heading"><div><p class="eyebrow">INVENTORY</p><h1>Network devices</h1><p class="muted">Review and manage devices discovered on your network.</p></div><button id="add-device-button" class="primary-button">＋ Add Trusted MAC</button></div><div class="panel"><div class="table-toolbar"><div class="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="online">Online</button><button class="filter" data-filter="trusted">Trusted</button><button class="filter" data-filter="unknown">Unknown</button></div><span id="device-count" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>DEVICE</th><th>IP ADDRESS</th><th>MAC ADDRESS</th><th>STATUS</th><th>TRUST</th><th>LAST SEEN</th><th></th></tr></thead><tbody id="devices-table"></tbody></table></div></div></section>
+      <section id="view-alerts" class="view"><div class="page-heading"><div><p class="eyebrow">THREAT CENTER</p><h1>Security alerts</h1><p class="muted">Stay informed about unrecognized activity.</p></div><button id="clear-alerts" class="secondary-button">Acknowledge All</button></div><div class="panel"><div class="table-toolbar"><div class="filters alert-filters"><button class="alert-filter active" data-alert-filter="all">All</button><button class="alert-filter" data-alert-filter="Warning">Warnings</button><button class="alert-filter" data-alert-filter="Normal">Normal</button></div></div><div id="alerts-table" class="alert-feed"></div></div></section>
+      <section id="view-history" class="view"><div class="page-heading"><div><p class="eyebrow">AUDIT LOG</p><h1>Device history</h1><p class="muted">Chronological connection and trust activity.</p></div></div><div class="panel"><div id="history-list" class="timeline"></div></div></section>
+      <section id="view-settings" class="view"><div class="page-heading"><div><p class="eyebrow">CONFIGURATION</p><h1>Settings</h1><p class="muted">Tune scanning and notification preferences.</p></div></div><div class="panel settings-panel"><form id="settings-form"><label>Target CIDR subnet<input id="settings-subnet" required placeholder="192.168.1.0/24"></label><label>Scan interval (seconds)<input id="settings-interval" type="number" min="1" required></label><label class="toggle-row"><span><strong>Desktop alerts</strong><small>Show notifications for unknown devices</small></span><input id="settings-notifications" type="checkbox"><i></i></label><button class="primary-button" type="submit">Save settings</button><p id="settings-message" class="form-message"></p></form></div></section>
+    </div>
+  </main>
+  <dialog id="device-modal"><form method="dialog" id="device-form"><button class="close-button" value="cancel">×</button><p class="eyebrow">TRUST LIST</p><h2>Add trusted device</h2><p class="muted">Enter a MAC address to approve it on future scans.</p><label>MAC address<input id="mac-input" required placeholder="00:11:22:33:44:55"></label><label>IP address (optional)<input id="ip-input" placeholder="192.168.1.10"></label><div class="modal-actions"><button class="secondary-button" value="cancel">Cancel</button><button class="primary-button" value="default">Trust device</button></div></form></dialog>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
